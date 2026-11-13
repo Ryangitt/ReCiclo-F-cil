@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReCiclo Fácil — Plataforma de Coleta Seletiva</title>
+  <style>
+    :root {
+      --primary: #15803d;
+      --primary-dark: #14532d;
+      --primary-light: #f0fdf4;
+      --accent: #0284c7;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: #ffffff;
+      padding: 1.5rem 1rem;
+      border-bottom: 4px solid var(--primary-dark);
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.92;
+    }
+
+    nav {
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding: 0.75rem 0;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      padding: 0.55rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 6px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    main {
+      padding: 2rem 0 3rem;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-header {
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.4rem;
+      color: var(--primary-dark);
+    }
+
+    .section-header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Filters */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .filter-bar span {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-right: 0.25rem;
+    }
+
+    .filter-btn {
+      padding: 0.4rem 0.9rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* Grid & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+      color: var(--text);
+    }
+
+    .card p {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.75rem;
+    }
+
+    .tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid #bbf7d0;
+    }
+
+    /* Guide Colors */
+    .guide-papel { border-top: 5px solid #2563eb; }
+    .guide-plastico { border-top: 5px solid #dc2626; }
+    .guide-vidro { border-top: 5px solid #16a34a; }
+    .guide-metal { border-top: 5px solid #eab308; }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.92rem;
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--primary);
+      border-color: var(--primary);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 0.5rem 0;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-small {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      background: #ffffff;
+    }
+
+    .btn-success {
+      background-color: #15803d;
+      color: #ffffff;
+      border-color: #15803d;
+    }
+
+    .btn-danger {
+      background-color: #dc2626;
+      color: #ffffff;
+      border-color: #dc2626;
+    }
+
+    .alert {
+      padding: 0.85rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    .alert-success {
+      background-color: #dcfce7;
+      color: #14532d;
+      border: 1px solid #86efac;
+      display: block;
+    }
+
+    .alert-error {
+      background-color: #fee2e2;
+      color: #7f1d1d;
+      border: 1px solid #fca5a5;
+      display: block;
+    }
+
+    /* Table */
+    .table-wrapper {
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background-color: #f1f5f9;
+      font-weight: 700;
+    }
+
+    .status-pendente {
+      color: #b45309;
+      font-weight: 700;
+    }
+
+    .status-concluido {
+      color: #15803d;
+      font-weight: 700;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+      background: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container header-top">
+      <div>
+        <h1>♻️ ReCiclo Fácil</h1>
+        <p>Plataforma Comunitária e Escolar de Coleta Seletiva</p>
+      </div>
+      <div style="font-size: 0.85rem; opacity: 0.9;">
+        Projeto Integrador — Engenharia de Software (UNIMA)
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="container nav-tabs">
+      <button class="tab-btn active" onclick="mudarAba('pontos', this)">📍 Pontos de Coleta</button>
+      <button class="tab-btn" onclick="mudarAba('guia', this)">📘 Guia de Separação</button>
+      <button class="tab-btn" onclick="mudarAba('solicitar', this)">🚚 Solicitar Coleta</button>
+      <button class="tab-btn" onclick="mudarAba('admin', this)">⚙️ Área Administrativa</button>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- ABA 1: PONTOS DE COLETA (RF01, RF02) -->
+    <section id="sec-pontos" class="section active">
+      <div class="section-header">
+        <h2>Pontos de Coleta Seletiva</h2>
+        <p>Encontre ecopontos e escolas parceiras próximos ao seu bairro e verifique os materiais aceitos.</p>
+      </div>
+
+      <div class="filter-bar">
+        <span>Filtrar por material:</span>
+        <button class="filter-btn active" onclick="filtrarPontos('Todos', this)">Todos</button>
+        <button class="filter-btn" onclick="filtrarPontos('Papel', this)">Papel</button>
+        <button class="filter-btn" onclick="filtrarPontos('Plástico', this)">Plástico</button>
+        <button class="filter-btn" onclick="filtrarPontos('Vidro', this)">Vidro</button>
+        <button class="filter-btn" onclick="filtrarPontos('Metal', this)">Metal</button>
+      </div>
+
+      <div id="lista-pontos" class="grid-2"></div>
+    </section>
+
+    <!-- ABA 2: GUIA DE SEPARAÇÃO (RF03) -->
+    <section id="sec-guia" class="section">
+      <div class="section-header">
+        <h2>Guia Rápido de Separação de Resíduos</h2>
+        <p>Siga estas orientações simples para preparar seus materiais antes de entregar ou solicitar coleta.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card guide-papel">
+          <h3>🔵 Papel e Papelão</h3>
+          <p><strong>O que pode:</strong> Jornais, revistas, folhas de caderno, caixas de papelão desmontadas, envelopes e embalagens longa vida limpas.</p>
+          <p><strong>Cuidados:</strong> Mantenha os papéis secos e sem gordura. Não inclua papel higiênico, guardanapos sujos ou papel carbono.</p>
+        </div>
+
+        <div class="card guide-plastico">
+          <h3>🔴 Plástico</h3>
+          <p><strong>O que pode:</strong> Garrafas PET, potes de alimentos, frascos de produtos de limpeza, sacolas plásticas e tampas.</p>
+          <p><strong>Cuidados:</strong> Passe uma água rápida para retirar restos de alimentos ou líquidos e amasse as garrafas para reduzir volume.</p>
+        </div>
+
+        <div class="card guide-vidro">
+          <h3>🟢 Vidro</h3>
+          <p><strong>O que pode:</strong> Garrafas de bebidas, potes de conserva, frascos de perfume e copos de vidro.</p>
+          <p><strong>Cuidados:</strong> Lave por dentro e retire tampas metálicas ou plásticas. Se houver vidro quebrado, embale bem em jornal ou caixa para evitar acidentes.</p>
+        </div>
+
+        <div class="card guide-metal">
+          <h3>🟡 Metal</h3>
+          <p><strong>O que pode:</strong> Latinhas de alumínio (refrigerante/cerveja), latas de alimentos em conserva, tampas metálicas e ferragens limpas.</p>
+          <p><strong>Cuidados:</strong> Retire restos orgânicos e amasse as latas de alumínio. Evite misturar pilhas, baterias ou latas de tinta tóxica.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: SOLICITAR COLETA (RF04) -->
+    <section id="sec-solicitar" class="section">
+      <div class="section-header">
+        <h2>Solicitar Coleta de Recicláveis</h2>
+        <p>Preencha os dados abaixo para registrar um pedido de retirada de materiais recicláveis.</p>
+      </div>
+
+      <div class="card" style="max-width: 640px;">
+        <div id="alerta-solicitacao" class="alert"></div>
+        <form id="form-solicitacao" onsubmit="registrarSolicitacao(event)">
+          <div class="form-group">
+            <label for="sol-nome">Nome Completo ou Instituição *</label>
+            <input type="text" id="sol-nome" placeholder="Ex: Maria Silva ou Escola Municipal..." required>
+          </div>
+
+          <div class="form-group">
+            <label for="sol-endereco">Endereço Completo (Rua, Número, Bairro) *</label>
+            <input type="text" id="sol-endereco" placeholder="Ex: Rua das Flores, 120 - Farol" required>
+          </div>
+
+          <div class="form-group">
+            <label for="sol-telefone">Telefone / WhatsApp para Contato *</label>
+            <input type="tel" id="sol-telefone" placeholder="Ex: (82) 99999-0000" required>
+          </div>
+
+          <div class="form-group">
+            <label for="sol-material">Tipo de Material Predominante *</label>
+            <select id="sol-material" required>
+              <option value="">Selecione uma categoria...</option>
+              <option value="Papel">Papel / Papelão</option>
+              <option value="Plástico">Plástico</option>
+              <option value="Vidro">Vidro</option>
+              <option value="Metal">Metal</option>
+              <option value="Misto (Vários Materiais)">Misto (Vários Materiais Separados)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sol-obs">Quantidade Estimada / Observações</label>
+            <textarea id="sol-obs" rows="3" placeholder="Ex: 3 sacos grandes de garrafas PET e caixas de papelão. Melhor horário pela manhã."></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary">Enviar Solicitação de Coleta</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ABA 4: ÁREA ADMINISTRATIVA (RF05) -->
+    <section id="sec-admin" class="section">
+      <div class="section-header">
+        <h2>Área Administrativa</h2>
+        <p>Gerencie os pontos de coleta cadastrados e acompanhe o atendimento das solicitações.</p>
+      </div>
+
+      <div class="card" style="margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem;">Cadastrar Novo Ponto de Coleta</h3>
+        <div id="alerta-admin" class="alert"></div>
+        <form id="form-ponto" onsubmit="cadastrarPonto(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="ponto-nome">Nome do Ecoponto / Escola *</label>
+              <input type="text" id="ponto-nome" placeholder="Ex: Ecoponto Comunitário Ponta Verde" required>
+            </div>
+            <div class="form-group">
+              <label for="ponto-horario">Horário de Funcionamento *</label>
+              <input type="text" id="ponto-horario" placeholder="Ex: Seg a Sex, 08h às 17h" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ponto-endereco">Endereço Completo *</label>
+            <input type="text" id="ponto-endereco" placeholder="Ex: Av. Álvaro Otacílio, 450 - Ponta Verde" required>
+          </div>
+
+          <div class="form-group">
+            <label>Materiais Aceitos neste Ponto *</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="mat" value="Papel" checked> Papel</label>
+              <label><input type="checkbox" name="mat" value="Plástico" checked> Plástico</label>
+              <label><input type="checkbox" name="mat" value="Vidro"> Vidro</label>
+              <label><input type="checkbox" name="mat" value="Metal" checked> Metal</label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary">Salvar Ponto de Coleta</button>
+        </form>
+      </div>
+
+      <h3 style="margin-bottom: 0.75rem;">Solicitações de Coleta Registradas</h3>
+      <div class="table-wrapper" style="margin-bottom: 2rem;">
+        <table>
+          <thead>
+            <tr>
+              <th>Protocolo</th>
+              <th>Solicitante</th>
+              <th>Endereço</th>
+              <th>Contato</th>
+              <th>Material / Obs</th>
+              <th>Status</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-solicitacoes"></tbody>
+        </table>
+      </div>
+
+      <h3 style="margin-bottom: 0.75rem;">Pontos de Coleta Ativos</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Local</th>
+              <th>Endereço</th>
+              <th>Horário</th>
+              <th>Materiais</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-pontos-admin"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    ReCiclo Fácil — Desenvolvido por Ryan Gabriel, Joaquim Rios, Matheus Alexandre e Luan Germano | UNIMA 2026
+  </footer>
+
+  <script>
+    // Dados iniciais padrão (seed)
+    const pontosIniciais = [
+      {
+        id: 1,
+        nome: "Ecoponto Praça Centenário",
+        endereco: "Av. Fernandes Lima, s/n - Farol, Maceió",
+        horario: "Segunda a Sábado, 07h às 18h",
+        materiais: ["Papel", "Plástico", "Vidro", "Metal"]
+      },
+      {
+        id: 2,
+        nome: "Escola Estadual Modelo Sustentável",
+        endereco: "Rua Professor José da Silveira Camerino, 310 - Pinheiro",
+        horario: "Segunda a Sexta, 08h às 17h",
+        materiais: ["Papel", "Plástico", "Metal"]
+      },
+      {
+        id: 3,
+        nome: "Ponto Comunitário Jatiúca Verde",
+        endereco: "Rua Dr. Antônio Gomes de Barros, 890 - Jatiúca",
+        horario: "Terça a Domingo, 08h às 16h",
+        materiais: ["Plástico", "Vidro", "Metal"]
+      }
+    ];
+
+    const solicitacoesIniciais = [
+      {
+        id: 1001,
+        nome: "Carlos Eduardo Mendes",
+        endereco: "Rua Íris Alagoense, 215 - Farol",
+        telefone: "(82) 98812-3456",
+        material: "Papel",
+        obs: "4 caixas de papelão e revistas antigas.",
+        status: "Pendente"
+      }
+    ];
+
+    // Carregar ou inicializar LocalStorage
+    let pontos = JSON.parse(localStorage.getItem('reciclo_pontos')) || pontosIniciais;
+    let solicitacoes = JSON.parse(localStorage.getItem('reciclo_solicitacoes')) || solicitacoesIniciais;
+    let filtroAtual = 'Todos';
+
+    function salvarDados() {
+      localStorage.setItem('reciclo_pontos', JSON.stringify(pontos));
+      localStorage.setItem('reciclo_solicitacoes', JSON.stringify(solicitacoes));
+    }
+
+    // Navegação por abas
+    function mudarAba(abaId, btn) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('sec-' + abaId).classList.add('active');
+      btn.classList.add('active');
+      renderizarTudo();
+    }
+
+    // Filtrar Pontos (RF02)
+    function filtrarPontos(categoria, btn) {
+      filtroAtual = categoria;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderizarPontos();
+    }
+
+    // Renderizar Lista Pública de Pontos (RF01)
+    function renderizarPontos() {
+      const container = document.getElementById('lista-pontos');
+      const filtrados = filtroAtual === 'Todos'
+        ? pontos
+        : pontos.filter(p => p.materiais.includes(filtroAtual));
+
+      if (filtrados.length === 0) {
+        container.innerHTML = '<p>Nenhum ponto de coleta encontrado para este material.</p>';
+        return;
+      }
+
+      container.innerHTML = filtrados.map(p => `
+        <div class="card">
+          <h3>${p.nome}</h3>
+          <p><strong>Endereço:</strong> ${p.endereco}</p>
+          <p><strong>Horário:</strong> ${p.horario}</p>
+          <div class="tags">
+            ${p.materiais.map(m => `<span class="tag">${m}</span>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Registrar Solicitação de Coleta (RF04)
+    function registrarSolicitacao(e) {
+      e.preventDefault();
+      const nome = document.getElementById('sol-nome').value.trim();
+      const endereco = document.getElementById('sol-endereco').value.trim();
+      const telefone = document.getElementById('sol-telefone').value.trim();
+      const material = document.getElementById('sol-material').value;
+      const obs = document.getElementById('sol-obs').value.trim();
+
+      const alerta = document.getElementById('alerta-solicitacao');
+
+      if (!nome || !endereco || !telefone || !material) {
+        alerta.className = 'alert alert-error';
+        alerta.textContent = 'Por favor, preencha todos os campos obrigatórios.';
+        return;
+      }
+
+      const novoPedido = {
+        id: Math.floor(1000 + Math.random() * 9000),
+        nome,
+        endereco,
+        telefone,
+        material,
+        obs: obs || 'Sem observações adicionais',
+        status: 'Pendente'
+      };
+
+      solicitacoes.unshift(novoPedido);
+      salvarDados();
+      document.getElementById('form-solicitacao').reset();
+
+      alerta.className = 'alert alert-success';
+      alerta.textContent = `Solicitação #${novoPedido.id} registrada com sucesso! Acompanhe o status na Área Administrativa.`;
+      renderizarAdmin();
+    }
+
+    // Cadastrar Novo Ponto no Admin (RF05)
+    function cadastrarPonto(e) {
+      e.preventDefault();
+      const nome = document.getElementById('ponto-nome').value.trim();
+      const horario = document.getElementById('ponto-horario').value.trim();
+      const endereco = document.getElementById('ponto-endereco').value.trim();
+      const checkboxes = document.querySelectorAll('input[name="mat"]:checked');
+      const materiais = Array.from(checkboxes).map(cb => cb.value);
+
+      const alerta = document.getElementById('alerta-admin');
+
+      if (!nome || !horario || !endereco || materiais.length === 0) {
+        alerta.className = 'alert alert-error';
+        alerta.textContent = 'Preencha todos os campos e selecione pelo menos um material aceito.';
+        return;
+      }
+
+      const novoPonto = {
+        id: Date.now(),
+        nome,
+        endereco,
+        horario,
+        materiais
+      };
+
+      pontos.push(novoPonto);
+      salvarDados();
+      document.getElementById('form-ponto').reset();
+
+      alerta.className = 'alert alert-success';
+      alerta.textContent = 'Novo ponto de coleta cadastrado e publicado com sucesso!';
+      renderizarTudo();
+    }
+
+    // Atualizar Status de Solicitação (RF05)
+    function concluirSolicitacao(id) {
+      solicitacoes = solicitacoes.map(s => s.id === id ? { ...s, status: 'Coletado' } : s);
+      salvarDados();
+      renderizarAdmin();
+    }
+
+    // Remover Ponto (RF05)
+    function removerPonto(id) {
+      pontos = pontos.filter(p => p.id !== id);
+      salvarDados();
+      renderizarTudo();
+    }
+
+    // Renderizar Tabelas Administrativas
+    function renderizarAdmin() {
+      const tbodySol = document.getElementById('tabela-solicitacoes');
+      if (solicitacoes.length === 0) {
+        tbodySol.innerHTML = '<tr><td colspan="7">Nenhuma solicitação registrada até o momento.</td></tr>';
+      } else {
+        tbodySol.innerHTML = solicitacoes.map(s => `
+          <tr>
+            <td><strong>#${s.id}</strong></td>
+            <td>${s.nome}</td>
+            <td>${s.endereco}</td>
+            <td>${s.telefone}</td>
+            <td><strong>${s.material}</strong><br><small>${s.obs}</small></td>
+            <td class="${s.status === 'Pendente' ? 'status-pendente' : 'status-concluido'}">${s.status}</td>
+            <td>
+              ${s.status === 'Pendente'
+                ? `<button class="btn-small btn-success" onclick="concluirSolicitacao(${s.id})">Marcar Coletado</button>`
+                : '<span>Concluído</span>'}
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      const tbodyPontos = document.getElementById('tabela-pontos-admin');
+      tbodyPontos.innerHTML = pontos.map(p => `
+        <tr>
+          <td><strong>${p.nome}</strong></td>
+          <td>${p.endereco}</td>
+          <td>${p.horario}</td>
+          <td>${p.materiais.join(', ')}</td>
+          <td><button class="btn-small btn-danger" onclick="removerPonto(${p.id})">Excluir</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderizarTudo() {
+      renderizarPontos();
+      renderizarAdmin();
+    }
+
+    // Inicialização
+    salvarDados();
+    renderizarTudo();
+  </script>
+</body>
+</html>
