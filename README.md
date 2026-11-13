@@ -63,8 +63,5 @@ cd reciclo-facil/src
 
 Abra o arquivo index.html diretamente em qualquer navegador moderno (Google Chrome, Microsoft Edge, Firefox ou Safari).
 
-📋 Gestão do Projeto
-
-Quadro de Tarefas (Trello / GitHub Projects): [Inserir link do quadro da equipe]
 
 Relatório Técnico Completo: Disponível na pasta /docs.
